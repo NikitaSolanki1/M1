@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .box {
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 20px;
+            border: 1px solid #c5d6cf;
+            background: #ffffff;
+            overflow-x: auto;
+        }
+        h1 { margin: 0 0 16px; font-size: 26px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            border: 1px solid #c5d6cf;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background: #0f6b5c; color: #fff; }
+        td a { color: #16332c; }
+        form { display: flex; gap: 8px; margin-bottom: 16px; }
+        input[type="search"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        button {
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #0f6b5c;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="box">
+        <h1>Exams</h1>
+        <form action="/control/manage_exams" method="get">
+            <input type="search" name="q" value="{{ q or '' }}" placeholder="Search examinations by name or ID">
+            <button type="submit">Search</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Exam Name</th>
+                    <th>Exam Description</th>
+                    <th>Exam Date</th>
+                    <th>Exam Duration</th>
+                    <th>Course Name</th>
+                    <th>Examiner Name</th>
+                    <th>Status</th>
+                    <th>Create Rubric</th>
+                    <th>Manage Rubric</th>
+                    <th>Slot creation</th>
+                    <th>Booking</th>
+                    <th>Marks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.id }}</td>
+                    <td>{{ exam.exam_name }}</td>
+                    <td>{{ exam.exam_description }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>{{ exam.exam_duration }}</td>
+                    <td>{{ exam.users.name }}</td>
+                    <td>{{ exam.examinor_name }}</td>
+                    <td>{{ phases[exam.id] }}</td>
+                    <td><a href="/control/create_rubric/{{ exam.id }}">create rubic</a></td>
+                    <td><a href="/control/manage_rubric/{{ exam.id }}">manage rubic</a></td>
+                    <td>
+                        {% if exam.is_slot_creation_open %}
+                        Open
+                        <a href="/control/close_slot_creation/{{ exam.id }}">Close</a>
+                        {% else %}
+                        Closed
+                        <a href="/control/open_slot_creation/{{ exam.id }}">Open</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if exam.is_booking_open %}
+                        Open
+                        <a href="/control/close_booking/{{ exam.id }}">Close booking</a>
+                        {% else %}
+                        Closed
+                        <a href="/control/open_booking/{{ exam.id }}">Open booking</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if exam.results_published %}
+                        Published
+                        <a href="/control/hide_results/{{ exam.id }}">Hide</a>
+                        {% else %}
+                        Hidden
+                        <a href="/control/publish_results/{{ exam.id }}">Publish</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/control/edit_exam/{{ exam.id }}">Edit</a>
+                        <a href="/control/delete_exam/{{ exam.id }}">Delete</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="14">No examinations match that name or ID.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

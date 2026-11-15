@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .box {
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+            max-width: 900px;
+            margin: 28px auto;
+            padding: 20px;
+            border: 1px solid #c5d6cf;
+            background: #ffffff;
+        }
+        h1 { margin: 0 0 16px; font-size: 26px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            border: 1px solid #c5d6cf;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background: #0f6b5c; color: #fff; }
+        td a { color: #16332c; }
+        .top { margin-bottom: 16px; }
+        .top a {
+            display: inline-block;
+            padding: 10px 14px;
+            background: #0f6b5c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+        form { display: flex; gap: 8px; margin-bottom: 16px; }
+        input[type="search"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        button {
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #0f6b5c;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="box">
+        <h1>Students</h1>
+        <form action="/control/manage_users" method="get">
+            <input type="search" name="q" value="{{ q or '' }}" placeholder="Search students by name or ID">
+            <button type="submit">Search</button>
+        </form>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{% if user.is_active %}Active{% else %}Blocked{% endif %}</td>
+                <td>
+                    <a href="/control/user_details/{{ user.id }}">Details</a>
+                    {% if user.is_active %}
+                    <a href="/control/block_user/{{ user.id }}">Block</a>
+                    {% else %}
+                    <a href="/control/unblock_user/{{ user.id }}">Unblock</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No students match that name or ID.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

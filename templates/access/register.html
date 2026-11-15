@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .card {
+            width: 100%;
+            max-width: 420px;
+            margin: 36px auto;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-family: Outfit, "Source Sans 3", sans-serif;
+            font-size: 26px;
+            color: var(--teal-dark);
+        }
+        p { margin: 0 0 20px; color: var(--muted); }
+        label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+        input, select {
+            width: 100%;
+            padding: 11px 12px;
+            margin-bottom: 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+        }
+        input:focus, select:focus {
+            outline: 2px solid rgba(15, 107, 92, 0.25);
+            border-color: var(--teal);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--teal);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { background: var(--teal-dark); }
+        .link { margin-top: 16px; text-align: center; font-size: 14px; }
+        .link a { color: var(--teal); font-weight: 600; }
+    </style>
+    <form class="card" action="/access/register" method="post">
+        <h1>Create account</h1>
+        <p>Sign up to use the exam site.</p>
+
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
+
+        <label for="role">I am a</label>
+        <select id="role" name="role" required>
+            <option value="student">Student</option>
+            <option value="examinor">Examiner</option>
+        </select>
+
+        <button type="submit">Sign up</button>
+        <div class="link">Already have an account? <a href="/access/login">Sign in</a></div>
+    </form>
+{% endblock %}

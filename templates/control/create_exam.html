@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .card {
+            width: 100%;
+            max-width: 420px;
+            margin: 28px auto;
+            background: #ffffff;
+            border: 1px solid #c5d6cf;
+            border-radius: 12px;
+            padding: 28px;
+        }
+        h1 { margin: 0 0 16px; font-size: 24px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 11px;
+            border: 0;
+            border-radius: 10px;
+            background: #0f6b5c;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        button:hover { background: #0c5549; }
+        .error {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 1px solid #c0392b;
+            background: #fdecea;
+            color: #922b21;
+            font-size: 14px;
+        }
+        .note {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 1px solid #c5d6cf;
+            background: #f7f7f7;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+    </style>
+
+    <form class="card" action="/control/create_exam" method="post">
+        <h1>Create Exam</h1>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <p class="note">Order: slot creation 16 Nov to 18 Nov, then booking 19 Nov to 20 Nov, then exam date 20 Nov or later.</p>
+        <label for="exam_name">Exam Name</label>
+        <input type="text" name="exam_name" id="exam_name">
+        <label for="exam_description">Exam Description</label>
+        <input type="text" name="exam_description" id="exam_description">
+        <label for="exam_duration">Exam Duration</label>
+        <input type="text" name="exam_duration" id="exam_duration">
+        <label for="slot_creation_start_date">Slot Creation Start Date</label>
+        <input type="date" name="slot_creation_start_date" id="slot_creation_start_date" required>
+        <label for="slot_creation_end_date">Slot Creation End Date</label>
+        <input type="date" name="slot_creation_end_date" id="slot_creation_end_date" required>
+        <label for="booking_open_date">Booking Opens</label>
+        <input type="date" name="booking_open_date" id="booking_open_date" required>
+        <label for="booking_close_date">Booking Closes</label>
+        <input type="date" name="booking_close_date" id="booking_close_date" required>
+        <label for="exam_date">Exam Date</label>
+        <input type="date" name="exam_date" id="exam_date">
+        <label for="examinor_id">Examiner</label>
+        <select name="examinor_id" id="examinor_id">
+            {% for examinor in examinors %}
+            <option value="{{ examinor.id }}">{{ examinor.name }}</option>
+            {% endfor %}
+        </select>
+        <label for="course_id">Course</label>
+        <select name="course_id" id="course_id">
+            {% for course in courses %}
+            <option value="{{ course.id }}">{{ course.coures_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Create Exam</button>
+    </form>
+{% endblock %}

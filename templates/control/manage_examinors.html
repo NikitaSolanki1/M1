@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Examiners{% endblock %}
+{% block content %}
+<h1>Examiners</h1>
+<form action="/control/manage_examinors" method="get">
+    <input type="search" name="q" value="{{ q or '' }}" placeholder="Search examiners by name or ID">
+    <button type="submit">Search</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Is Verified</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    {% for examinor in examinors %}
+    <tr>
+        <td>{{ examinor.id }}</td>
+        <td>{{ examinor.name }}</td>
+        <td>{{ examinor.email }}</td>
+        <td>{{ examinor.role }}</td>
+        <td>{{ examinor.is_verified }}</td>
+        <td>{% if examinor.is_active %}Active{% else %}Blocked{% endif %}</td>
+        <td>
+            <a href="/control/approve_examinor/{{ examinor.id }}">Approve</a>
+            {% if examinor.is_active %}
+            <a href="/control/block_user/{{ examinor.id }}">Block</a>
+            {% else %}
+            <a href="/control/unblock_user/{{ examinor.id }}">Unblock</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="7">No examiners match that name or ID.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

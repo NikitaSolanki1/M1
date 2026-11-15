@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .box {
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+            max-width: 960px;
+            margin: 28px auto;
+            padding: 20px;
+            border: 1px solid #c5d6cf;
+            background: #ffffff;
+        }
+        h1 { margin: 0 0 8px; font-size: 26px; }
+        p { margin: 0 0 16px; color: #16332c; }
+        .links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .links a, td a.button {
+            display: inline-block;
+            padding: 10px 14px;
+            background: #0f6b5c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+        .links a:hover, td a.button:hover { background: #0c5549; }
+        .profile {
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .profile h2 { margin: 0 0 10px; font-size: 16px; }
+        .row { margin: 0 0 6px; font-size: 14px; }
+        .row span { display: inline-block; width: 140px; color: #4a635c; }
+        h2 { margin: 22px 0 10px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        th, td {
+            border: 1px solid #c5d6cf;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background: #0f6b5c; color: #fff; }
+        .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        .stat {
+            flex: 1;
+            min-width: 120px;
+            border: 1px solid #c5d6cf;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        .stat span { display: block; font-size: 22px; font-weight: bold; }
+        .stat small { color: #16332c; }
+    </style>
+
+    <div class="box">
+        <h1>Student home</h1>
+        <div class="stats">
+            <div class="stat"><span>{{ exams|length }}</span><small>Exams</small></div>
+            <div class="stat"><span>{{ open_slots|length }}</span><small>Open slots</small></div>
+            <div class="stat"><span>{{ bookings|length }}</span><small>My bookings</small></div>
+        </div>
+
+        {% if profile %}
+        <p>Your profile is saved. You can change it any time.</p>
+        <div class="profile">
+            <h2>{{ user.name }}</h2>
+            <p class="row"><span>Email</span>{{ user.email }}</p>
+            <p class="row"><span>Address</span>{{ profile.address }}</p>
+            <p class="row"><span>Phone</span>{{ profile.phone }}</p>
+            <p class="row"><span>Past experience</span>{{ profile.past_experience }}</p>
+        </div>
+        <div class="links">
+            <a href="/learner/edit_profile">Change profile</a>
+        </div>
+        {% else %}
+        <p>Add your address, phone, and past work.</p>
+        <div class="links">
+            <a href="/learner/create_profile">Make profile</a>
+        </div>
+        {% endif %}
+
+        <h2>Exams</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Course</th>
+                    <th>Date</th>
+                    <th>Duration</th>
+                    <th>Examiner</th>
+                    <th>Booking</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.exam_name }}</td>
+                    <td>{{ courses[exam.coures_id].coures_name if courses.get(exam.coures_id) else exam.coures_id }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>{{ exam.exam_duration }} min</td>
+                    <td>{{ exam.examinor_name }}</td>
+                    <td>{{ phases.get(exam.id, 'Draft') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No exams yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Open slots</h2>
+        <p>You can book a slot only while the admin has opened booking for that exam.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Slot date</th>
+                    <th>Slot time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in open_slots %}
+                <tr>
+                    <td>{{ exam_map[slot.exam_id].exam_name if exam_map.get(slot.exam_id) else slot.exam_id }}</td>
+                    <td>{{ slot.slot_date }}</td>
+                    <td>{{ slot.slot_time.strftime('%H:%M') }}</td>
+                    <td>
+                        {% set slot_exam = exam_map.get(slot.exam_id) %}
+                        {% if can_book.get(slot.exam_id) %}
+                        <a class="button" href="/learner/book_slot/{{ slot.id }}">Book slot</a>
+                        {% elif slot_exam and slot_exam.booking_open_date and today < slot_exam.booking_open_date %}
+                        Booking opens {{ slot_exam.booking_open_date }}
+                        {% else %}
+                        Booking is closed
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No open slots right now.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>My bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Exam date</th>
+                    <th>Slot date</th>
+                    <th>Status</th>
+                    <th>Marks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ exam_map[booking.exam_id].exam_name if exam_map.get(booking.exam_id) else booking.exam_id }}</td>
+                    <td>{{ exam_map[booking.exam_id].exam_date if exam_map.get(booking.exam_id) else '' }}</td>
+                    <td>{{ slot_map[booking.slot_id].slot_date if slot_map.get(booking.slot_id) else '' }} {{ slot_map[booking.slot_id].slot_time.strftime('%H:%M') if slot_map.get(booking.slot_id) else '' }}</td>
+                    <td>{{ statuses[booking.id] }}</td>
+                    <td>
+                        {% if mark_summary[booking.id].published and mark_summary[booking.id].awarded is not none %}
+                        <a href="/learner/my_marks">{{ mark_summary[booking.id].awarded }} / {{ mark_summary[booking.id].possible }}</a>
+                        {% elif mark_summary[booking.id].published %}
+                        <a href="/learner/my_marks">Not given</a>
+                        {% else %}
+                        Not published
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cancel_open[booking.id] %}
+                        <a href="/learner/cancel_booking/{{ booking.id }}">Cancel</a>
+                        {% else %}
+                        Deadline passed
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">You have not booked a slot yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

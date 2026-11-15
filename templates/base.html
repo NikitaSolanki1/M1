@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearExam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <style>
+        :root {
+            --ink: #16332c;
+            --muted: #4a635c;
+            --teal: #0f6b5c;
+            --teal-dark: #0c5549;
+            --mint: #e7f4ef;
+            --sand: #f3f7f4;
+            --line: #c5d6cf;
+            --card: #ffffff;
+            --warn-bg: #fde8e8;
+            --warn: #9b1c1c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: "Source Sans 3", "Segoe UI", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(15, 107, 92, 0.10), transparent 42%),
+                radial-gradient(circle at 88% 8%, rgba(34, 120, 90, 0.08), transparent 36%),
+                linear-gradient(180deg, #eef6f2 0%, var(--sand) 48%, #e8f1ec 100%);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(120deg, #0d5a4e 0%, #0f6b5c 55%, #147a68 100%);
+            color: #fff;
+            padding: 12px 20px;
+            box-shadow: 0 8px 24px rgba(12, 60, 50, 0.18);
+        }
+
+        .brand {
+            color: #fff;
+            font-family: Outfit, "Source Sans 3", sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.14);
+        }
+
+        main.page {
+            flex: 1;
+            width: 100%;
+            padding: 8px 12px 28px;
+        }
+
+        footer {
+            text-align: center;
+            background: #12352e;
+            color: #d7ebe4;
+            padding: 14px;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 720px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .menu {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+    <nav>
+        <a class="brand" href="/">ClearExam</a>
+        <div class="menu">
+        {% if 'user_id' in session %}
+        <a href="/logout">Sign out</a>
+        {% if session['role'] == 'admin' %}
+            <a href="/control/admin_dashboard">Admin home</a>
+            <a href="/control/manage_courses">Courses</a>
+            <a href="/control/manage_exams">Exams</a>
+            <a href="/control/manage_examinors">Examiners</a>
+            <a href="/control/manage_users">Students</a>
+            <a href="/control/view_bookings">Bookings</a>
+        {% elif session['role'] == 'examinor' %}
+            <a href="/marker/see_assigned_exams">My exams</a>
+            <a href="/marker/see_bookings">Bookings</a>
+            <a href="/marker/examior_dashboard">Examiner home</a>
+        {% elif session['role'] == 'student' %}
+            <a href="/learner/user_dashboard">Student home</a>
+            <a href="/learner/exams">Exams</a>
+            <a href="/learner/bookings">My bookings</a>
+            <a href="/learner/history">History</a>
+            <a href="/learner/my_marks">Marks</a>
+        {% endif %}
+
+        {% else %}
+        <a href="/access/login">Sign in</a>
+        <a href="/access/register">Sign up</a>
+        {% endif %}
+        </div>
+    </nav>
+    <main class="page">
+    {% block content %}
+    {% endblock %}
+    </main>
+    <footer>
+        <p>ClearExam · 2026</p>
+    </footer>
+</body>
+
+</html>

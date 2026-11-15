@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .card {
+            width: 100%;
+            max-width: 420px;
+            margin: 28px auto;
+            background: #ffffff;
+            border: 1px solid #c5d6cf;
+            border-radius: 12px;
+            padding: 28px;
+        }
+        h1 { margin: 0 0 16px; font-size: 24px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 11px;
+            border: 0;
+            border-radius: 10px;
+            background: #0f6b5c;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        button:hover { background: #0c5549; }
+        .back { display: block; margin-top: 14px; text-align: center; font-size: 14px; color: #16332c; }
+    </style>
+
+    <form class="card" action="/control/create_user" method="post">
+        <h1>Create User</h1>
+
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <button type="submit">Create user</button>
+        <a class="back" href="/control/manage_users">Back to users</a>
+    </form>
+{% endblock %}

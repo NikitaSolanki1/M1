@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .box {
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+            max-width: 720px;
+            margin: 28px auto;
+            padding: 20px;
+            border: 1px solid #c5d6cf;
+            background: #ffffff;
+        }
+        h1 { margin: 0 0 16px; font-size: 26px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            border: 1px solid #c5d6cf;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background: #0f6b5c; color: #fff; }
+        td a { color: #16332c; margin-right: 10px; }
+    </style>
+
+    <div class="box">
+        <h1>Manage Rubric</h1>
+        <table>
+            <tr>
+                <th>Question</th>
+                <th>Marks</th>
+                <th>Actions</th>
+            </tr>
+            {% for question in questions %}
+            <tr>
+                <td>{{ question.question }}</td>
+                <td>{{ question.marks }}</td>
+                <td>
+                    <a href="/control/edit_rubric/{{ question.id }}">Edit</a>
+                    <a href="/control/delete_rubric/{{ question.id }}">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No questions yet.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

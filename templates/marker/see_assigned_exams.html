@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .box {
+        max-width: 1200px;
+        margin: 28px auto;
+        padding: 20px;
+        border: 1px solid #c5d6cf;
+        background: #ffffff;
+        overflow-x: auto;
+    }
+    h1 { margin: 0 0 16px; font-size: 26px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+        border: 1px solid #c5d6cf;
+        padding: 10px;
+        text-align: left;
+        white-space: nowrap;
+    }
+    th { background: #0f6b5c; color: #fff; }
+    td a { color: #16332c; }
+</style>
+
+<div class="box">
+    <h1>Assigned Exams</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Exam Name</th>
+                <th>Description</th>
+                <th>Course</th>
+                <th>Date</th>
+                <th>Duration (min)</th>
+                <th>Slot Creation Start</th>
+                <th>Slot Creation End</th>
+                <th>Booking Start</th>
+                <th>Booking End</th>
+                <th>Examiner</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exam in assigned_exams %}
+            <tr>
+                <td>{{ exam.exam_name }}</td>
+                <td>{{ exam.exam_description }}</td>
+                <td>{{ courses[exam.coures_id].coures_name if courses.get(exam.coures_id) else exam.coures_id }}</td>
+                <td>{{ exam.exam_date }}</td>
+                <td>{{ exam.exam_duration }}</td>
+                <td>{{ exam.slot_creation_start_date or 'Not set' }}</td>
+                <td>{{ exam.slot_creation_end_date or 'Not set' }}</td>
+                <td>{{ exam.booking_start_time }}</td>
+                <td>{{ exam.booking_end_time }}</td>
+                <td>{{ exam.examinor_name }}</td>
+                <td>
+                    <a href="/marker/provide_slot/{{ exam.id }}">Create Slot</a>
+                    {% if exam.results_published %}Published{% else %}Not published{% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="11">No exams are assigned to you.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

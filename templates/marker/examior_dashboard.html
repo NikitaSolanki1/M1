@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .box {
+            border-radius: 16px;
+            box-shadow: 0 16px 36px rgba(18, 70, 58, 0.08);
+            max-width: 960px;
+            margin: 28px auto;
+            padding: 20px;
+            border: 1px solid #c5d6cf;
+            background: #ffffff;
+        }
+        h1 { margin: 0 0 8px; font-size: 26px; }
+        p { margin: 0 0 16px; color: #16332c; }
+        .links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .links a {
+            display: inline-block;
+            padding: 10px 14px;
+            background: #0f6b5c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+        .links a:hover { background: #0c5549; }
+        .profile {
+            border: 1px solid #c5d6cf;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .profile h2 { margin: 0 0 10px; font-size: 16px; }
+        .row { margin: 0 0 6px; font-size: 14px; }
+        .row span { display: inline-block; width: 140px; color: #4a635c; }
+        h2 { margin: 22px 0 10px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            border: 1px solid #c5d6cf;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background: #0f6b5c; color: #fff; }
+        td a { color: #16332c; }
+    </style>
+
+    <div class="box">
+        <h1>Examiner home</h1>
+        {% if profile %}
+        <p>Your staff profile is saved. You can change it any time.</p>
+        <div class="profile">
+            <h2>{{ user.name }}</h2>
+            <p class="row"><span>Email</span>{{ user.email }}</p>
+            <p class="row"><span>Address</span>{{ profile.address }}</p>
+            <p class="row"><span>Phone</span>{{ profile.phone }}</p>
+            <p class="row"><span>Past experience</span>{{ profile.past_experience }}</p>
+        </div>
+        <div class="links">
+            <a href="/marker/edit_profile">Change profile</a>
+        </div>
+        {% else %}
+        <p>Add your address, phone, and past work so the admin can give you exams.</p>
+        <div class="links">
+            <a href="/marker/create_profile">Make profile</a>
+        </div>
+        {% endif %}
+
+        <h2>Create slots</h2>
+        <p>You can create a slot only between the start and end dates the admin set for that exam.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Date</th>
+                    <th>Slot creation dates</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in assigned_exams %}
+                <tr>
+                    <td>{{ exam.exam_name }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>
+                        {% if exam.slot_creation_start_date and exam.slot_creation_end_date %}
+                        {{ exam.slot_creation_start_date }} – {{ exam.slot_creation_end_date }}
+                        {% else %}
+                        Not set by admin
+                        {% endif %}
+                    </td>
+                    <td><a href="/marker/provide_slot/{{ exam.id }}">Create slot</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No exams are assigned to you yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Booked slots</h2>
+        <p>These are the slots students have booked for your exams. The full list is also under Bookings.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Exam date</th>
+                    <th>Slot date</th>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ exam_map[booking.exam_id].exam_name if exam_map.get(booking.exam_id) else booking.exam_id }}</td>
+                    <td>{{ exam_map[booking.exam_id].exam_date if exam_map.get(booking.exam_id) else '' }}</td>
+                    <td>{{ slot_map[booking.slot_id].slot_date if slot_map.get(booking.slot_id) else '' }} {{ slot_map[booking.slot_id].slot_time.strftime('%H:%M') if slot_map.get(booking.slot_id) else '' }}</td>
+                    <td>{{ student_map[booking.student_id].name if student_map.get(booking.student_id) else booking.student_id }}</td>
+                    <td>{{ student_map[booking.student_id].email if student_map.get(booking.student_id) else '' }}</td>
+                    <td>
+                        {% if mark_summary[booking.id].awarded is not none %}
+                        <a href="/marker/give_marks/{{ booking.id }}">{{ mark_summary[booking.id].awarded }} / {{ mark_summary[booking.id].possible }}</a>
+                        {% else %}
+                        <a href="/marker/give_marks/{{ booking.id }}">Give marks</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No students have booked a slot yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
